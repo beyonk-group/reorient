@@ -1,0 +1,29 @@
+{
+  "name": "reorient",
+  "version": "0.0.0",
+  "description": "Reorganise objects into other objects",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha **.test.js"
+  },
+  "keywords": [
+    "reorganise",
+    "reorient",
+    "organise",
+    "transform",
+    "remap",
+    "map",
+    "reorder",
+    "marshal",
+    "translate"
+  ],
+  "author": "Antony Jones",
+  "license": "MIT",
+  "dependencies": {
+    "hoek": "^4.1.0"
+  },
+  "devDependencies": {
+    "code": "^4.0.0",
+    "mocha": "^3.2.0"
+  }
+}
