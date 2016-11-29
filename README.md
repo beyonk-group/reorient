@@ -33,6 +33,9 @@ See Hoek.transform docs (linked above) for basic usage, see below for advanced u
     // results in:
     
     address === {
-      fullName: 'Antony Jones'
+      fullName: 'Antony Jones',
+      job: {
+        title: 'Developer'
+      }
     }
 ```
