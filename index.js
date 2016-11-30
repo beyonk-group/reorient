@@ -20,8 +20,6 @@ class Transformer {
       }
     })
 
-    
-
     return transform(newSource, newTransforms, options)
   }
 }

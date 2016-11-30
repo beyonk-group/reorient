@@ -22,6 +22,16 @@
   "dependencies": {
     "hoek": "^4.1.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:desirable-objects/reorient.git"
+  },
+  "bugs": {
+    "url": "https://github.com/desirable-objects/reorient/issues"
+  },
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "devDependencies": {
     "code": "^4.0.0",
     "mocha": "^3.2.0"
