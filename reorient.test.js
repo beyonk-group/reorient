@@ -38,4 +38,64 @@ describe('Reorient', () => {
       expect(result.grault).to.equal('waldo & plugh')
     })
   })
+
+  context('Trim nulls', () => {
+    let result
+
+    function makeUndefined () {
+      return undefined
+    }
+
+    const source = {
+      bar: undefined,
+      baz: void 0,
+      qux: null,
+      grault: false,
+      garply: {
+        waldo: undefined
+      }
+    }
+
+    const transforms = {
+      'foo': makeUndefined,
+      'bar': 'bar',
+      'baz': 'baz',
+      'qux': 'qux',
+      'grault': 'grault',
+      'fred.plugh': 'garply.waldo'
+    }
+
+    before(() => {
+      result = transform(source, transforms, { trim: true })
+    })
+
+    it('Strips undefined resolved values', () => {
+      expect(result).not.to.include('foo')
+    })
+
+    it('Strips undefined values', () => {
+      expect(result).not.to.include('bar')
+    })
+
+    it('Strips void 0 values', () => {
+      expect(result).not.to.include('baz')
+    })
+
+    it('Strips null values', () => {
+      expect(result).not.to.include('qux')
+    })
+
+    it('Strips nested undefined values', () => {
+      expect(result).not.to.include('fred')
+    })
+
+    it('Does not strip false values', () => {
+      expect(result).to.include('grault')
+    })
+
+    it('Does not trim nulls by default', () => {
+      const transformed = transform(source, transforms)
+      expect(transformed).to.include(['foo', 'bar', 'baz', 'qux', 'grault'])
+    })
+  })
 })

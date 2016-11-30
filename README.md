@@ -25,7 +25,7 @@ See Hoek.transform docs (linked above) for basic usage, see below for advanced u
       return data.firstName + ' ' + data.lastName
     }
 
-    const transformationData = {
+    const transforms = {
       'fullName': buildFullName,
       'job.title', 'job.role'
     }
@@ -39,5 +39,41 @@ See Hoek.transform docs (linked above) for basic usage, see below for advanced u
       job: {
         title: 'Developer'
       }
+    }
+```
+
+### options
+
+reorient takes all the options hoek can take for
+ [Hoek.transform](https://github.com/hapijs/hoek/blob/master/API.md#transformobj-transform-options), 
+ and in addition, has a few extra options:
+
+#### trim
+
+
+Trim trims all null, undefined, and void values (excluding false), as well as dropping empty objects.
+
+It will do this for all values including nested values (deep)
+
+```
+    const source = {
+      firstName: 'Antony',
+      lastName: null,
+      job: {
+        role: undefined
+       }
+    }
+
+    const transforms = {
+      'firstName': firstName,
+      'job.role', 'job.role'
+    }
+
+    const address = transform(source, transforms, {  })
+
+    // results in:
+    
+    address === {
+      firstName: 'Antony'
     }
 ```
