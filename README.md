@@ -69,7 +69,7 @@ It will do this for all values including nested values (deep)
       'job.role', 'job.role'
     }
 
-    const address = transform(source, transforms, {  })
+    const address = transform(source, transforms, { trim: true })
 
     // results in:
     
