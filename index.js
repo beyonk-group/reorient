@@ -14,21 +14,28 @@ class Internals {
   }
 
   hasChildren (value) {
-    return Object.keys(value).length === 0
+    return this.isObject(value) && Object.keys(value).length > 0
   }
 
-  isNested (value) {
-    return typeof value === 'object'
+  isObject (value) {
+    return this.isDefined(value) && typeof value === 'object'
   }
 
   trim (transformed) {
-    return Object.keys(transformed).reduce((result, key) => {
+    const res = Object.keys(transformed).reduce((result, key) => {
       let value = transformed[key]
-      if (this.isDefined(value) && this.hasChildren(value)) {
-        result[key] = this.isNested(value) ? this.trim(value) : value
+
+      if (this.hasChildren(value)) {
+        value = this.trim(value)
       }
+
+      if (this.isDefined(value)) {
+        result[key] = value
+      }
+
       return result
     }, {})
+    return this.hasChildren(res) ? res : null
   }
 }
 

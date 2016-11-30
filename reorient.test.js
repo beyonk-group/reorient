@@ -46,6 +46,10 @@ describe('Reorient', () => {
       return undefined
     }
 
+    function getSomeValue () {
+      return 'xyzzy'
+    }
+
     const source = {
       bar: undefined,
       baz: void 0,
@@ -62,7 +66,8 @@ describe('Reorient', () => {
       'baz': 'baz',
       'qux': 'qux',
       'grault': 'grault',
-      'fred.plugh': 'garply.waldo'
+      'fred.plugh': 'garply.waldo',
+      'thud': getSomeValue
     }
 
     before(() => {
@@ -91,6 +96,10 @@ describe('Reorient', () => {
 
     it('Does not strip false values', () => {
       expect(result).to.include('grault')
+    })
+
+    it('Maps regular values', () => {
+      expect(result.thud).to.equal(getSomeValue())
     })
 
     it('Does not trim nulls by default', () => {
