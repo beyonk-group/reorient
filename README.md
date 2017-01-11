@@ -69,7 +69,7 @@ It will do this for all values including nested values (deep)
     }
 
     const transforms = {
-      'firstName': firstName,
+      'firstName': 'firstName',
       'job.role', 'job.role'
     }
 
