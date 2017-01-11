@@ -13,6 +13,8 @@ See Hoek.transform docs (linked above) for basic usage, see below for advanced u
 ## Usage
 
 ```
+    const { transform } = require('reorient')
+
     const source = {
       firstName: 'Antony',
       lastName: 'Jones',
@@ -56,6 +58,8 @@ Trim trims all null, undefined, and void values (excluding false), as well as dr
 It will do this for all values including nested values (deep)
 
 ```
+    const { transform } = require('reorient')
+
     const source = {
       firstName: 'Antony',
       lastName: null,
