@@ -12,6 +12,8 @@ See Hoek.transform docs (linked above) for basic usage, see below for advanced u
 
 ## Usage
 
+Transformation from object to object
+
 ```javascript
     const { transform } = require('reorient')
 
@@ -32,16 +34,50 @@ See Hoek.transform docs (linked above) for basic usage, see below for advanced u
       'job.title': 'job.role'
     }
 
-    const address = transform(source, transforms)
+    const result = transform(source, transforms)
     
     // results in:
     
-    address === {
+    result === {
       fullName: 'Antony Jones',
       job: {
         title: 'Developer'
       }
     }
+```
+
+Transformation from object to array
+
+```javascript
+    const { transform } = require('reorient')
+
+    const source = {
+      firstName: 'Antony',
+      lastName: 'Jones',
+      job: {
+        role: 'Developer'
+       }
+    }
+    
+    const buildFullName = function (data) {
+      return data.firstName + ' ' + data.lastName
+    }
+
+    // to convert to an array, drop your 'destination' keys,
+    // and just pass an array of transformations
+    const transforms = [
+      buildFullName,
+      'job.role'
+    ]
+
+    const result = transform(source, transforms)
+    
+    // results in:
+    
+    result === [
+      'Antony Jones',
+      'Developer'
+    ]
 ```
 
 ### options
@@ -72,11 +108,11 @@ It will do this for all values including nested values (deep)
       'job.role': 'job.role'
     }
 
-    const address = transform(source, transforms, { trim: true })
+    const result = transform(source, transforms, { trim: true })
 
     // results in:
     
-    address === {
+    result === {
       firstName: 'Antony'
     }
 ```
