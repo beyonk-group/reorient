@@ -107,4 +107,70 @@ describe('Reorient', () => {
       expect(transformed).to.include(['foo', 'bar', 'baz', 'qux', 'grault'])
     })
   })
+
+  context('Defaults', () => {
+    const source = {
+      foo: 'foo',
+      bar: 'bar',
+      baz: undefined,
+      qux: null,
+      grault: false,
+      plugh: 0,
+      thud: ''
+    }
+
+    const transforms = {
+      foo: 'foo',
+      bar: { path: 'bar', default: 'barr' },
+      baz: { path: 'baz', default: 'quux' },
+      qux: { path: 'qux', default: 'garply' },
+      grault: { path: 'grault', default: 'waldo' },
+      plugh: { path: 'plugh', default: 'thud' },
+      thud: { path: 'thud', default: 'zap' },
+      kwak: { path: 'kwak', default: 'blorp' },
+      wack: { path: 'wack.porp', default: 'doop' }
+    }
+
+    let result
+
+    before(() => {
+      result = transform(source, transforms)
+    })
+
+    it('Regular transform', () => {
+      expect(result.foo).to.equal(source.foo)
+    })
+
+    it('Regular transform with default', () => {
+      expect(result.bar).to.equal(source.bar)
+    })
+
+    it('Does not default undefined property', () => {
+      expect(result.baz).to.equal(undefined)
+    })
+
+    it('Does not default null property', () => {
+      expect(result.qux).to.equal(null)
+    })
+
+    it('Does not default falsy property', () => {
+      expect(result.grault).to.equal(false)
+    })
+
+    it('Does not default falsy value 0', () => {
+      expect(result.plugh).to.equal(0)
+    })
+
+    it('Does not default falsy value <empty string>', () => {
+      expect(result.thud).to.equal('')
+    })
+
+    it('Defaults missing property', () => {
+      expect(result.kwak).to.equal('blorp')
+    })
+
+    it('Defaults missing path', () => {
+      expect(result.wack).to.equal('doop')
+    })
+  })
 })

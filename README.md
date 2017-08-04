@@ -12,7 +12,7 @@ See Hoek.transform docs (linked above) for basic usage, see below for advanced u
 
 ## Usage
 
-```
+```javascript
     const { transform } = require('reorient')
 
     const source = {
@@ -29,7 +29,7 @@ See Hoek.transform docs (linked above) for basic usage, see below for advanced u
 
     const transforms = {
       'fullName': buildFullName,
-      'job.title', 'job.role'
+      'job.title': 'job.role'
     }
 
     const address = transform(source, transforms)
@@ -52,12 +52,11 @@ reorient takes all the options hoek can take for
 
 #### trim
 
-
 Trim trims all null, undefined, and void values (excluding false), as well as dropping empty objects.
 
 It will do this for all values including nested values (deep)
 
-```
+```javascript
     const { transform } = require('reorient')
 
     const source = {
@@ -70,7 +69,7 @@ It will do this for all values including nested values (deep)
 
     const transforms = {
       'firstName': 'firstName',
-      'job.role', 'job.role'
+      'job.role': 'job.role'
     }
 
     const address = transform(source, transforms, { trim: true })
@@ -79,5 +78,43 @@ It will do this for all values including nested values (deep)
     
     address === {
       firstName: 'Antony'
+    }
+```
+
+#### default
+
+Defaulting of properties can be done on a per property basis by specifying a configuration object than simply a path.
+
+Defaults cannot be specified when using a function as a transform, you should do the defaulting in your function.
+
+```javascript
+    const { transform } = require('reorient')
+
+    const source = {
+      firstName: 'Antony',
+      contract: {
+        start: Date.now()
+      }
+    }
+
+    const defaultEndDate = new Date()
+    defaultEndDate.setMonth(defaultEndDate.getMonth() + 3)
+
+    const transforms = {
+      'firstName': 'firstName',
+      'employment.startDate': 'contract.start',
+      'employment.endDate': { path: 'contract.endDate', default: defaultEndDate }
+    }
+
+    const details = transform(source, transforms)
+
+    // results in:
+    
+    details === {
+      firstName: 'Antony',
+      employment: {
+        startDate: 'Fri Aug 03 2017 22:23:10 GMT+0100 (BST)',
+        endDate: 'Sat Nov 03 2017 22:23:23 GMT+0000 (GMT)'
+      }
     }
 ```
