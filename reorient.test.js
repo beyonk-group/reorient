@@ -174,3 +174,67 @@ describe('Reorient', () => {
     })
   })
 })
+
+context('Function with default', () => {
+  function impossible () {
+    return null
+  }
+
+  const source = {
+    foo: 'foo'
+  }
+
+  const transforms = {
+    foo: { path: impossible, default: 'barr' },
+  }
+
+  it('Is not allowed', () => {
+    expect(() => {
+      transform(source, transforms)
+    }).to.throw(
+      Error, 
+      'Transformations with default values cannot be functions'
+    )
+  })
+})
+
+context('Missing configuration', () => {
+  const error = 'Defaultable values should have `path` and `default` properties'
+  
+  const source = {
+    foo: 'foo'
+  }
+
+  it('Requires path and default', () => {
+    expect(() => {
+      transform(source, {
+        foo: {},
+      })
+    }).to.throw(
+      Error, 
+      error
+    )
+  })
+
+  it('Requires path', () => {
+    expect(() => {
+      transform(source, {
+        foo: { default: 'barr' },
+      })
+    }).to.throw(
+      Error, 
+      error
+    )
+  })
+
+  it('Requires default', () => {
+    expect(() => {
+      transform(source, {
+        foo: { path: 'xxx.yyy' },
+      })
+    }).to.throw(
+      Error, 
+      error
+    )
+  })
+})
