@@ -39,7 +39,7 @@ describe('Reorient', () => {
     })
   })
 
-  context.only('#transform([Array array])', () => {
+  context('#transform([Array array])', () => {
     const CORGE = 'corge'
     const getCorge = function () { return CORGE }
     const combineGarplyFred = function (source) { return `${source.garply} & ${source.fred}`}
@@ -62,7 +62,6 @@ describe('Reorient', () => {
     })
 
     it('Result is an array', () => {
-      console.log(result)
       expect(result).to.be.an.array()
     })
 
