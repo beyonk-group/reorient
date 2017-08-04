@@ -60,27 +60,37 @@ function transformFromFunction (id, source, fn) {
   return { value, destination: `methodized.${id}` }
 }
 
+function makeArray (indexed) {
+  return Array.from(
+    Object.keys(indexed), i => indexed[i]
+  )
+}
+
 exports.transform = function (source, transforms, options = {}) {
+  const arrayOutput = Array.isArray(transforms)
+
   const allKeys = Object.keys(transforms)
   const newSource = { mappings: source, methodized: {} }
   const newTransforms = {}
 
   allKeys.forEach((key, i) => {
-    const id = `_key${i}`
-
+    const destinationKey = arrayOutput ? i : key
+    
     if (typeof transforms[key] === 'string') {
-      newTransforms[key] = `mappings.${transforms[key]}`
-    } else if (typeof transforms[key] === 'object') {
-      const { value, destination } = transformFromConfiguration(id, source, transforms[key])
-      newSource.methodized[id] = value
-      newTransforms[key] = destination
-    } else {
-      const { value, destination } = transformFromFunction(id, source, transforms[key])
-
-      newSource.methodized[id] = value
-      newTransforms[key] = destination
+      newTransforms[destinationKey] = `mappings.${transforms[key]}`
+      return
     }
+
+    const id = `_key${i}`
+    const keyIsObject = typeof transforms[key] === 'object'
+    const { value, destination } = keyIsObject ? 
+      transformFromConfiguration(id, source, transforms[key]) :
+      transformFromFunction(id, source, transforms[key])
+
+    newSource.methodized[id] = value
+    newTransforms[destinationKey] = destination
   })
 
-  return convert(newSource, newTransforms, options)
+  const transformed = convert(newSource, newTransforms, options)
+  return arrayOutput ? makeArray(transformed) : transformed
 }

@@ -4,7 +4,7 @@ const { transform } = require('.')
 const { expect } = require('code')
 
 describe('Reorient', () => {
-  context('#transform()', () => {
+  context('#transform([Object object])', () => {
     const CORGE = 'corge'
     const getCorge = function () { return CORGE }
     const combineGarplyFred = function (source) { return `${source.garply} & ${source.fred}`}
@@ -36,6 +36,46 @@ describe('Reorient', () => {
 
     it('Transformation function receives source', () => {
       expect(result.grault).to.equal('waldo & plugh')
+    })
+  })
+
+  context.only('#transform([Array array])', () => {
+    const CORGE = 'corge'
+    const getCorge = function () { return CORGE }
+    const combineGarplyFred = function (source) { return `${source.garply} & ${source.fred}`}
+    let result
+
+    const source = {
+      foo: 'bar',
+      garply: 'waldo',
+      fred: 'plugh'
+    }
+
+    const transforms = [
+      'foo',
+      getCorge,
+      combineGarplyFred
+    ]
+
+    before(() => {
+      result = transform(source, transforms)
+    })
+
+    it('Result is an array', () => {
+      console.log(result)
+      expect(result).to.be.an.array()
+    })
+
+    it('Transforms values', () => {
+      expect(result[0]).to.equal(source.foo)
+    })
+
+    it('Transforms functions', () => {
+      expect(result[1]).to.equal(CORGE)
+    })
+
+    it('Transformation function receives source', () => {
+      expect(result[2]).to.equal('waldo & plugh')
     })
   })
 
