@@ -48,13 +48,25 @@ describe('Reorient', () => {
     const source = {
       foo: 'bar',
       garply: 'waldo',
-      fred: 'plugh'
+      fred: 'plugh',
+      qux: null,
+      quux: undefined,
+      quz: false,
+      grault: {
+        waldo: 'corge'
+      }
     }
 
     const transforms = [
       'foo',
       getCorge,
-      combineGarplyFred
+      combineGarplyFred,
+      'qux',
+      'quux',
+      'quz',
+      'grault.waldo',
+      'grault.corge',
+      'waldo'
     ]
 
     before(() => {
@@ -75,6 +87,34 @@ describe('Reorient', () => {
 
     it('Transformation function receives source', () => {
       expect(result[2]).to.equal('waldo & plugh')
+    })
+
+    it('Transforms null', () => {
+      expect(result[2]).to.equal('waldo & plugh')
+    })
+
+    it('Transforms undefined', () => {
+      expect(result[3]).to.equal(null)
+    })
+
+    it('Transforms undefined', () => {
+      expect(result[4]).to.equal(undefined)
+    })
+
+    it('Transforms false', () => {
+      expect(result[5]).to.equal(false)
+    })
+
+    it('Transforms nested value', () => {
+      expect(result[6]).to.equal('corge')
+    })
+
+    it('Transforms missing nested value', () => {
+      expect(result[7]).to.equal(undefined)
+    })
+
+    it('Transforms missing root value', () => {
+      expect(result[8]).to.equal(undefined)
     })
   })
 
