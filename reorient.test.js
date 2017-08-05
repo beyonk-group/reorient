@@ -17,9 +17,10 @@ describe('Reorient', () => {
     }
 
     const transforms = {
-      'baz': 'foo',
-      'qux': getCorge,
-      'grault': combineGarplyFred
+      baz: 'foo',
+      qux: getCorge,
+      grault: combineGarplyFred,
+      corge: null
     }
 
     before(() => {
@@ -36,6 +37,10 @@ describe('Reorient', () => {
 
     it('Transformation function receives source', () => {
       expect(result.grault).to.equal('waldo & plugh')
+    })
+
+    it('Supports no-op keys', () => {
+      expect(result.corge).not.to.exist()
     })
   })
 
@@ -66,7 +71,8 @@ describe('Reorient', () => {
       'quz',
       'grault.waldo',
       'grault.corge',
-      'waldo'
+      'waldo',
+      null
     ]
 
     before(() => {
@@ -115,6 +121,10 @@ describe('Reorient', () => {
 
     it('Transforms missing root value', () => {
       expect(result[8]).to.equal(undefined)
+    })
+
+    it('Supports nulls as no-op', () =>  {
+      expect(result[9]).not.to.exist()
     })
   })
 

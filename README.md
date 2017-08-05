@@ -80,6 +80,36 @@ Transformation from object to array
     ]
 ```
 
+### Empty mappings
+
+If you leave a mapping directive empty, it will simply map to null. This is probably more useful for arrays where you need a gap in an array, but it works on objects too, i.e. `someKey: null`
+
+```javascript
+    const { transform } = require('reorient')
+
+    const source = {
+      one: 'one',
+      two: 'not-supplied',
+      three: 'three' 
+    }
+
+    const transforms = [
+      'one',
+      null,
+      'three'
+    ]
+
+    const result = transform(source, transforms)
+    
+    // results in:
+    
+    result === [
+      'one',
+      null,
+      'three'
+    ]
+```
+
 ### options
 
 reorient takes all the options hoek can take for

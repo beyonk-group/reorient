@@ -66,6 +66,10 @@ function makeArray (indexed) {
   )
 }
 
+function noop () {
+  return null
+}
+
 exports.transform = function (source, transforms, options = {}) {
   const arrayOutput = Array.isArray(transforms)
 
@@ -76,6 +80,10 @@ exports.transform = function (source, transforms, options = {}) {
   allKeys.forEach((key, i) => {
     const destinationKey = arrayOutput ? i : key
     
+    if (!transforms[key]) {
+      transforms[key] = noop
+    }
+
     if (typeof transforms[key] === 'string') {
       newTransforms[destinationKey] = `mappings.${transforms[key]}`
       return
