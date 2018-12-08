@@ -7,7 +7,7 @@ describe('Reorient', () => {
   context('#transform([Object object])', () => {
     const CORGE = 'corge'
     const getCorge = function () { return CORGE }
-    const combineGarplyFred = function (source) { return `${source.garply} & ${source.fred}`}
+    const combineGarplyFred = function (source) { return `${source.garply} & ${source.fred}` }
     let result
 
     const source = {
@@ -23,8 +23,8 @@ describe('Reorient', () => {
       corge: null
     }
 
-    before(() => {
-      result = transform(source, transforms)
+    before(async () => {
+      result = await transform(source, transforms)
     })
 
     it('Transforms values', () => {
@@ -47,7 +47,7 @@ describe('Reorient', () => {
   context('#transform([Array array])', () => {
     const CORGE = 'corge'
     const getCorge = function () { return CORGE }
-    const combineGarplyFred = function (source) { return `${source.garply} & ${source.fred}`}
+    const combineGarplyFred = function (source) { return `${source.garply} & ${source.fred}` }
     let result
 
     const source = {
@@ -75,8 +75,8 @@ describe('Reorient', () => {
       null
     ]
 
-    before(() => {
-      result = transform(source, transforms)
+    before(async () => {
+      result = await transform(source, transforms)
     })
 
     it('Result is an array', () => {
@@ -123,7 +123,7 @@ describe('Reorient', () => {
       expect(result[8]).to.equal(undefined)
     })
 
-    it('Supports nulls as no-op', () =>  {
+    it('Supports nulls as no-op', () => {
       expect(result[9]).not.to.exist()
     })
   })
@@ -159,8 +159,8 @@ describe('Reorient', () => {
       'thud': getSomeValue
     }
 
-    before(() => {
-      result = transform(source, transforms, { trim: true })
+    before(async () => {
+      result = await transform(source, transforms, { trim: true })
     })
 
     it('Strips undefined resolved values', () => {
@@ -191,8 +191,8 @@ describe('Reorient', () => {
       expect(result.thud).to.equal(getSomeValue())
     })
 
-    it('Does not trim nulls by default', () => {
-      const transformed = transform(source, transforms)
+    it('Does not trim nulls by default', async () => {
+      const transformed = await transform(source, transforms)
       expect(transformed).to.include(['foo', 'bar', 'baz', 'qux', 'grault'])
     })
   })
@@ -222,8 +222,8 @@ describe('Reorient', () => {
 
     let result
 
-    before(() => {
-      result = transform(source, transforms)
+    before(async () => {
+      result = await transform(source, transforms)
     })
 
     it('Regular transform', () => {
@@ -274,14 +274,14 @@ context('Function with default', () => {
   }
 
   const transforms = {
-    foo: { path: impossible, default: 'barr' },
+    foo: { path: impossible, default: 'barr' }
   }
 
-  it('Is not allowed', () => {
-    expect(() => {
+  it('Is not allowed', async () => {
+    await expect(
       transform(source, transforms)
-    }).to.throw(
-      Error, 
+    ).to.reject(
+      Error,
       'Transformations with default values cannot be functions'
     )
   })
@@ -289,40 +289,40 @@ context('Function with default', () => {
 
 context('Missing configuration', () => {
   const error = 'Defaultable values should have `path` and `default` properties'
-  
+
   const source = {
     foo: 'foo'
   }
 
-  it('Requires path and default', () => {
-    expect(() => {
+  it('Requires path and default', async () => {
+    await expect(
       transform(source, {
-        foo: {},
+        foo: {}
       })
-    }).to.throw(
-      Error, 
+    ).to.reject(
+      Error,
       error
     )
   })
 
-  it('Requires path', () => {
-    expect(() => {
+  it('Requires path', async () => {
+    await expect(
       transform(source, {
-        foo: { default: 'barr' },
+        foo: { default: 'barr' }
       })
-    }).to.throw(
-      Error, 
+    ).to.reject(
+      Error,
       error
     )
   })
 
-  it('Requires default', () => {
-    expect(() => {
+  it('Requires default', async () => {
+    await expect(
       transform(source, {
-        foo: { path: 'xxx.yyy' },
+        foo: { path: 'xxx.yyy' }
       })
-    }).to.throw(
-      Error, 
+    ).to.reject(
+      Error,
       error
     )
   })

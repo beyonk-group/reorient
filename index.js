@@ -1,6 +1,7 @@
 'use strict'
 
-const { transform, assert, reach } = require('hoek')
+const { assert, reach } = require('hoek')
+const { transform } = require('./transform')
 
 function convert (source, transforms, options) {
   const transformed = transform(source, transforms, options)
@@ -40,11 +41,11 @@ function trim (transformed) {
 
 function transformFromConfiguration (id, source, configuration) {
   assert(
-    configuration.hasOwnProperty('path') 
-    && configuration.hasOwnProperty('default'),
+    configuration.hasOwnProperty('path') &&
+    configuration.hasOwnProperty('default'),
     'Defaultable values should have `path` and `default` properties'
   )
-  
+
   assert(typeof configuration.path === 'string',
     'Transformations with default values cannot be functions'
   )
@@ -54,9 +55,9 @@ function transformFromConfiguration (id, source, configuration) {
   return { value, destination: `methodized.${id}` }
 }
 
-function transformFromFunction (id, source, fn) {
-  const value = fn.call(fn, source)
-  
+async function transformFromFunction (id, source, fn) {
+  const value = await fn.call(fn, source)
+
   return { value, destination: `methodized.${id}` }
 }
 
@@ -70,16 +71,16 @@ function noop () {
   return null
 }
 
-exports.transform = function (source, transforms, options = {}) {
+exports.transform = async function (source, transforms, options = {}) {
   const arrayOutput = Array.isArray(transforms)
 
   const allKeys = Object.keys(transforms)
   const newSource = { mappings: source, methodized: {} }
   const newTransforms = {}
 
-  allKeys.forEach((key, i) => {
+  await Promise.all(allKeys.map(async (key, i) => {
     const destinationKey = arrayOutput ? i : key
-    
+
     if (!transforms[key]) {
       transforms[key] = noop
     }
@@ -91,13 +92,13 @@ exports.transform = function (source, transforms, options = {}) {
 
     const id = `_key${i}`
     const keyIsObject = typeof transforms[key] === 'object'
-    const { value, destination } = keyIsObject ? 
-      transformFromConfiguration(id, source, transforms[key]) :
-      transformFromFunction(id, source, transforms[key])
+    const { value, destination } = keyIsObject
+      ? transformFromConfiguration(id, source, transforms[key])
+      : await transformFromFunction(id, source, transforms[key])
 
     newSource.methodized[id] = value
     newTransforms[destinationKey] = destination
-  })
+  }))
 
   const transformed = convert(newSource, newTransforms, options)
   return arrayOutput ? makeArray(transformed) : transformed

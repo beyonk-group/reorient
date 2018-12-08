@@ -2,9 +2,21 @@
 
 [![Build Status](https://travis-ci.org/desirable-objects/reorient.svg?branch=master)](https://travis-ci.org/desirable-objects/reorient)
 
-Transforms an object from one form into another form much like [Hoek.transform](https://github.com/hapijs/hoek/blob/master/API.md#transformobj-transform-options), but allows methods as transformation values, which are called during transformation, and passed the original source object.
+Transforms an object from one form into another form much like (the now removed) [Hoek.transform](https://github.com/hapijs/hoek/blob/5.0.4/API.md#transformobj-transform-options), but allows methods as transformation values, which are called during transformation, and passed the original source object.
 
 This allows for more useful transformations as shown in Usage.
+
+## Releases
+
+### v3.0.0
+
+Version 3.0.0 includes some major changes:
+* We now require `await transform()` rather than `transform()`
+* We took the code for `transform` and its associated tests and embedded it in the project, since it has been removed from their latest release.
+
+### < v2.1.0
+
+Version < 2.1.0 does not use async/await
 
 ## Documentation
 
@@ -34,7 +46,7 @@ Transformation from object to object
       'job.title': 'job.role'
     }
 
-    const result = transform(source, transforms)
+    const result = await transform(source, transforms)
     
     // results in:
     
@@ -70,7 +82,7 @@ Transformation from object to array
       'job.role'
     ]
 
-    const result = transform(source, transforms)
+    const result = await transform(source, transforms)
     
     // results in:
     
@@ -99,7 +111,7 @@ If you leave a mapping directive empty, it will simply map to null. This is prob
       'three'
     ]
 
-    const result = transform(source, transforms)
+    const result = await transform(source, transforms)
     
     // results in:
     
@@ -138,7 +150,7 @@ It will do this for all values including nested values (deep)
       'job.role': 'job.role'
     }
 
-    const result = transform(source, transforms, { trim: true })
+    const result = await transform(source, transforms, { trim: true })
 
     // results in:
     
@@ -172,7 +184,7 @@ Defaults cannot be specified when using a function as a transform, you should do
       'employment.endDate': { path: 'contract.endDate', default: defaultEndDate }
     }
 
-    const details = transform(source, transforms)
+    const details = await transform(source, transforms)
 
     // results in:
     
