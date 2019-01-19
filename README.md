@@ -12,7 +12,8 @@ This allows for more useful transformations as shown in Usage.
 
 Version 3.0.0 includes some major changes:
 * We now require `await transform()` rather than `transform()`
-* We took the code for `transform` and its associated tests and embedded it in the project, since it has been removed from their latest release.
+* We took `transform` and its associated tests from `hoek`  and embedded it in the project, since it has been removed from their latest release.
+* Requires node 7 or above, For node < 6, use version < 3
 
 ### < v2.1.0
 
