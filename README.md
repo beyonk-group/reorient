@@ -1,6 +1,10 @@
-# reorient
+<p align="center">
+  <img width="186" height="90" src="https://user-images.githubusercontent.com/218949/44782765-377e7c80-ab80-11e8-9dd8-fce0e37c235b.png" alt="Beyonk" />
+</p>
 
-[![Build Status](https://travis-ci.org/desirable-objects/reorient.svg?branch=master)](https://travis-ci.org/desirable-objects/reorient)
+## Reorient
+
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com) ![publish](https://github.com/beyonk-adventures/reorient/workflows/publish/badge.svg)
 
 Transforms an object from one form into another form much like (the now removed) [Hoek.transform](https://github.com/hapijs/hoek/blob/5.0.4/API.md#transformobj-transform-options), but allows methods as transformation values, which are called during transformation, and passed the original source object.
 
