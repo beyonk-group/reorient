@@ -1,7 +1,7 @@
 'use strict'
 
 const { transform } = require('./transform')
-const { expect } = require('code')
+const { expect } = require('@hapi/code')
 
 describe('transform()', () => {
   const source = {

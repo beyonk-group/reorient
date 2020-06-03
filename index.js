@@ -1,6 +1,6 @@
 'use strict'
 
-const { assert, reach } = require('hoek')
+const { assert, reach } = require('@hapi/hoek')
 const { transform } = require('./transform')
 
 function convert (source, transforms, options) {
@@ -39,24 +39,31 @@ function trim (transformed) {
   return hasChildren(res) ? res : null
 }
 
-function transformFromConfiguration (id, source, configuration) {
+async function doTransform (id, source, configuration) {
   assert(
-    configuration.hasOwnProperty('path') &&
-    configuration.hasOwnProperty('default'),
-    'Defaultable values should have `path` and `default` properties'
+    configuration.hasOwnProperty('path'),
+    'Transform options should at least include `path` property.'
   )
 
-  assert(typeof configuration.path === 'string',
-    'Transformations with default values cannot be functions'
-  )
+  if (configuration.hasOwnProperty('default')) {
+    assert(typeof configuration.path === 'string',
+      'Transformations with default values cannot be functions'
+    )
+  }
 
-  const value = reach(source, configuration.path, { default: configuration.default })
+  if (configuration.hasOwnProperty('validate')) {
+    assert(
+      typeof configuration.validate === 'function',
+      'validate property should be a function which returns true or throws an error'
+    )
+  }
 
-  return { value, destination: `methodized.${id}` }
-}
+  const { path } = configuration
+  const transformed = typeof path === 'function'
+    ? await path.call(path, source)
+    : reach(source, path, configuration.default ? { default: configuration.default } : undefined)
 
-async function transformFromFunction (id, source, fn) {
-  const value = await fn.call(fn, source)
+  const value = configuration.validate ? configuration.validate(transformed, source) : transformed
 
   return { value, destination: `methodized.${id}` }
 }
@@ -91,10 +98,8 @@ exports.transform = async function (source, transforms, options = {}) {
     }
 
     const id = `_key${i}`
-    const keyIsObject = typeof transforms[key] === 'object'
-    const { value, destination } = keyIsObject
-      ? transformFromConfiguration(id, source, transforms[key])
-      : await transformFromFunction(id, source, transforms[key])
+    const transformConfiguration = typeof transforms[key] === 'object' ? transforms[key] : { path: transforms[key] }
+    const { value, destination } = await doTransform(id, source, transformConfiguration)
 
     newSource.methodized[id] = value
     newTransforms[destinationKey] = destination

@@ -1,7 +1,8 @@
 'use strict'
 
 const { transform } = require('.')
-const { expect } = require('code')
+const { expect } = require('@hapi/code')
+const { stub } = require('sinon')
 
 describe('Reorient', () => {
   context('#transform([Object object])', () => {
@@ -128,7 +129,7 @@ describe('Reorient', () => {
     })
   })
 
-  context('Trim nulls', () => {
+  context('Nulls are trimmed', () => {
     let result
 
     function makeUndefined () {
@@ -197,7 +198,7 @@ describe('Reorient', () => {
     })
   })
 
-  context('Defaults', () => {
+  context('With defaults', () => {
     const source = {
       foo: 'foo',
       bar: 'bar',
@@ -234,8 +235,8 @@ describe('Reorient', () => {
       expect(result.bar).to.equal(source.bar)
     })
 
-    it('Does not default undefined property', () => {
-      expect(result.baz).to.equal(undefined)
+    it('Defaults undefined property', () => {
+      expect(result.baz).to.equal('quux')
     })
 
     it('Does not default null property', () => {
@@ -262,68 +263,123 @@ describe('Reorient', () => {
       expect(result.wack).to.equal('doop')
     })
   })
-})
 
-context('Function with default', () => {
-  function impossible () {
-    return null
-  }
+  context('With validation', () => {
+    function getQux () {
+      return 'qux'
+    }
 
-  const source = {
-    foo: 'foo'
-  }
+    function validateIsQux () {
+      return 'qux'
+    }
 
-  const transforms = {
-    foo: { path: impossible, default: 'barr' }
-  }
+    const source = {
+      foo: 'qux',
+      bar: null
+    }
 
-  it('Is not allowed', async () => {
-    await expect(
-      transform(source, transforms)
-    ).to.reject(
-      Error,
-      'Transformations with default values cannot be functions'
-    )
+    const transforms = {
+      foo: { path: 'foo', validate: validateIsQux },
+      bar: { path: 'baz', default: 'qux', validate: validateIsQux },
+      baz: { path: getQux, validate: validateIsQux }
+    }
+
+    let result
+
+    before(async () => {
+      result = await transform(source, transforms)
+    })
+
+    it('Regular transform', () => {
+      expect(result.foo).to.equal(source.foo)
+    })
+
+    it('With default value', () => {
+      expect(result.bar).to.equal('qux')
+    })
+
+    it('With function as path', () => {
+      expect(result.baz).to.equal('qux')
+    })
+  })
+
+  context('receives value and source object', () => {
+    const source = {
+      foo: 'qux',
+      bar: 'baz'
+    }
+
+    let validateStub
+
+    before(async () => {
+      validateStub = stub()
+      await transform(source, {
+        baz: {
+          path: 'foo',
+          validate: validateStub
+        }
+      })
+    })
+
+    it('Recieved transformed value', () => {
+      expect(validateStub.firstCall.args[0]).to.equal('qux')
+    })
+
+    it('Recieved full source', () => {
+      expect(validateStub.firstCall.args[1]).to.equal(source)
+    })
+  })
+
+  context('With failing', () => {
+    const scenarios = [
+      { scenario: 'validation of regular path', conf: { foo: { path: 'foo', validate: validateIsQux } }  },
+      { scenario: 'validation of defaulted path', conf: { foo: { path: 'baz', default: 'qux', validate: validateIsQux } } },
+      { scenario: 'validation of function path', conf: { foo: { path: getQux, validate: validateIsQux } } }
+    ]
+
+    function getQux () {
+      return 'qux'
+    }
+
+    function validateIsQux () {
+      throw new Error('validation failed')
+    }
+
+    const source = {
+      foo: 'qux'
+    }
+
+    scenarios.forEach(({ scenario, conf }) => {
+      it(scenario, async () => {
+        await expect(
+          transform(source, conf)
+        ).to.reject(Error, 'validation failed')
+      })
+    })
   })
 })
 
-context('Missing configuration', () => {
-  const error = 'Defaultable values should have `path` and `default` properties'
+describe('Configuration', () => {
+  const scenarios = [
+    { scenario: 'requires path', conf: { foo: {} }, err: 'Transform options should at least include `path` property.' },
+    { scenario: 'default cannot use function', conf: { foo: { path: () => {}, default: 'barr' } }, err: 'Transformations with default values cannot be functions' },
+    { scenario: 'default cannot use function', conf: { foo: { path: 'x', validate: 'ff' } }, err: 'validate property should be a function which returns true or throws an error' },
+  ]
 
-  const source = {
-    foo: 'foo'
-  }
+  scenarios.forEach(({ scenario, conf, err }) => {
+    context(scenario, () => {
+      const source = {
+        foo: 'foo'
+      }
 
-  it('Requires path and default', async () => {
-    await expect(
-      transform(source, {
-        foo: {}
+      it('fails validation', async () => {
+        await expect(
+          transform(source, conf)
+        ).to.reject(
+          Error,
+          err
+        )
       })
-    ).to.reject(
-      Error,
-      error
-    )
-  })
-
-  it('Requires path', async () => {
-    await expect(
-      transform(source, {
-        foo: { default: 'barr' }
-      })
-    ).to.reject(
-      Error,
-      error
-    )
-  })
-
-  it('Requires default', async () => {
-    await expect(
-      transform(source, {
-        foo: { path: 'xxx.yyy' }
-      })
-    ).to.reject(
-      Error,
-      error
-    )
+    })
   })
 })

@@ -1,6 +1,6 @@
 'use strict'
 
-const { assert, reach } = require('hoek')
+const { assert, reach } = require('@hapi/hoek')
 
 exports.transform = function (source, transform, options) {
   assert(source === null || source === undefined || typeof source === 'object' || Array.isArray(source), 'Invalid source object: must be null, undefined, an object, or an array')

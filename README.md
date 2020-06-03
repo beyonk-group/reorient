@@ -8,6 +8,11 @@ This allows for more useful transformations as shown in Usage.
 
 ## Releases
 
+### v4.0.0
+
+* Adds validation as an option
+* Defaults `undefined` values
+
 ### v3.0.0
 
 Version 3.0.0 includes some major changes:
@@ -196,4 +201,35 @@ Defaults cannot be specified when using a function as a transform, you should do
         endDate: 'Sat Nov 03 2017 22:23:23 GMT+0000 (GMT)'
       }
     }
+```
+
+
+#### validating
+
+Properties can be passed a validator function, which is passed the value of the transformation, and the original source object
+
+The validator function must return the field value if the field is valid, or throw an error with a validation message.
+
+The example below uses [Joi](https://hapi.dev/module/joi/)
+
+```javascript
+    const { transform } = require('reorient')
+    const Joi = require('@hapi/joi')
+
+    async function validateNationalInsurance (value, source) {
+      const schema = Joi.string().pattern(/^[A-Z]{2}[0-9]{6}[A-Z]$/)
+      return schema.validateAsync(nationalInsurance)
+    }
+
+    const source = {
+      firstName: 'Antony',
+      nationalInsurance: 'AA332211B'
+    }
+
+    const transforms = {
+      'firstName': 'firstName',
+      'employment.endDate': { path: 'nationalInsurance', validate: validateNationalInsurance }
+    }
+
+    const details = await transform(source, transforms)
 ```
