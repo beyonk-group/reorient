@@ -43,7 +43,7 @@ describe('transform()', () => {
     const result = transform(source, {
       'person.address.lineOne': 'address.one',
       'person.address.lineTwo': 'address.two',
-      'title': 'title',
+      title: 'title',
       'person.address.region': 'state',
       'person.address.zip': 'zip.code',
       'person.address.location': 'zip.province'
@@ -65,7 +65,7 @@ describe('transform()', () => {
     const result = transform(sourcesArray, {
       'person.address.lineOne': 'address.one',
       'person.address.lineTwo': 'address.two',
-      'title': 'title',
+      title: 'title',
       'person.address.region': 'state',
       'person.address.zip': 'zip.code',
       'person.address.location': 'zip.province'
@@ -101,7 +101,7 @@ describe('transform()', () => {
     const schema = {
       'person-address-lineOne': 'address-one',
       'person-address-lineTwo': 'address-two',
-      'title': 'title',
+      title: 'title',
       'person-address-region': 'state',
       'person-prefix': 'person-title',
       'person-zip': 'zip-code'
@@ -128,7 +128,7 @@ describe('transform()', () => {
     const schema = {
       'person.address.lineOne': 'address.one',
       'person.address.lineTwo': 'address.two',
-      'title': 'title',
+      title: 'title',
       'person.address.region': 'state',
       'person.prefix': 'person.title',
       'person.zip': 'zip.code'

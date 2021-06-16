@@ -14,14 +14,16 @@ describe('Reorient', () => {
     const source = {
       foo: 'bar',
       garply: 'waldo',
-      fred: 'plugh'
+      fred: 'plugh',
+      xyzzy: [{ id: 'thud' }]
     }
 
     const transforms = {
       baz: 'foo',
       qux: getCorge,
       grault: combineGarplyFred,
-      corge: null
+      corge: null,
+      xyzzy: 'xyzzy'
     }
 
     before(async () => {
@@ -42,6 +44,11 @@ describe('Reorient', () => {
 
     it('Supports no-op keys', () => {
       expect(result.corge).not.to.exist()
+    })
+
+    it('Transforms arrays', () => {
+      console.log(result)
+      expect(result.xyzzy).to.equal([{ id: 'thud' }])
     })
   })
 
@@ -142,22 +149,24 @@ describe('Reorient', () => {
 
     const source = {
       bar: undefined,
-      baz: void 0,
+      baz: void 0, // eslint-disable-line
       qux: null,
       grault: false,
       garply: {
         waldo: undefined
-      }
+      },
+      xyzzy: ['thud']
     }
 
     const transforms = {
-      'foo': makeUndefined,
-      'bar': 'bar',
-      'baz': 'baz',
-      'qux': 'qux',
-      'grault': 'grault',
+      foo: makeUndefined,
+      bar: 'bar',
+      baz: 'baz',
+      qux: 'qux',
+      grault: 'grault',
       'fred.plugh': 'garply.waldo',
-      'thud': getSomeValue
+      thud: getSomeValue,
+      xyzzy: 'xyzzy'
     }
 
     before(async () => {
@@ -190,6 +199,10 @@ describe('Reorient', () => {
 
     it('Maps regular values', () => {
       expect(result.thud).to.equal(getSomeValue())
+    })
+
+    it('Maps arrays', () => {
+      expect(result.xyzzy).to.equal(['thud'])
     })
 
     it('Does not trim nulls by default', async () => {
@@ -332,7 +345,7 @@ describe('Reorient', () => {
 
   context('With failing', () => {
     const scenarios = [
-      { scenario: 'validation of regular path', conf: { foo: { path: 'foo', validate: validateIsQux } }  },
+      { scenario: 'validation of regular path', conf: { foo: { path: 'foo', validate: validateIsQux } } },
       { scenario: 'validation of defaulted path', conf: { foo: { path: 'baz', default: 'qux', validate: validateIsQux } } },
       { scenario: 'validation of function path', conf: { foo: { path: getQux, validate: validateIsQux } } }
     ]
@@ -363,7 +376,7 @@ describe('Configuration', () => {
   const scenarios = [
     { scenario: 'requires path', conf: { foo: {} }, err: 'Transform options should at least include `path` property.' },
     { scenario: 'default cannot use function', conf: { foo: { path: () => {}, default: 'barr' } }, err: 'Transformations with default values cannot be functions' },
-    { scenario: 'default cannot use function', conf: { foo: { path: 'x', validate: 'ff' } }, err: 'validate property should be a function which returns true or throws an error' },
+    { scenario: 'default cannot use function', conf: { foo: { path: 'x', validate: 'ff' } }, err: 'validate property should be a function which returns true or throws an error' }
   ]
 
   scenarios.forEach(({ scenario, conf, err }) => {

@@ -10,7 +10,7 @@ function convert (source, transforms, options) {
 }
 
 function isDefined (value) {
-  return ![null, undefined, void 0].includes(value)
+  return ![null, undefined, void 0].includes(value) // eslint-disable-line
 }
 
 function hasChildren (value) {
@@ -22,36 +22,40 @@ function isObject (value) {
 }
 
 function trim (transformed) {
-  const res = Object.keys(transformed).reduce((result, key) => {
-    let value = transformed[key]
+  if (Array.isArray(transformed)) { return transformed }
 
-    if (hasChildren(value)) {
-      value = trim(value)
-    }
+  const res = Object
+    .keys(transformed)
+    .reduce((result, key) => {
+      let value = transformed[key]
 
-    if (isDefined(value)) {
-      result[key] = value
-    }
+      if (hasChildren(value)) {
+        value = trim(value)
+      }
 
-    return result
-  }, {})
+      if (isDefined(value)) {
+        result[key] = value
+      }
+
+      return result
+    }, {})
 
   return hasChildren(res) ? res : null
 }
 
 async function doTransform (id, source, configuration) {
   assert(
-    configuration.hasOwnProperty('path'),
+    Object.prototype.hasOwnProperty.call(configuration, 'path'),
     'Transform options should at least include `path` property.'
   )
 
-  if (configuration.hasOwnProperty('default')) {
+  if (Object.prototype.hasOwnProperty.call(configuration, 'default')) {
     assert(typeof configuration.path === 'string',
       'Transformations with default values cannot be functions'
     )
   }
 
-  if (configuration.hasOwnProperty('validate')) {
+  if (Object.prototype.hasOwnProperty.call(configuration, 'validate')) {
     assert(
       typeof configuration.validate === 'function',
       'validate property should be a function which returns true or throws an error'
